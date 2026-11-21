@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Compass — nearest-neighbour token launch radar</title>
+<link rel="stylesheet" href="app.css">
+</head>
+<body>
+<header class="hero">
+  <div class="hero-inner">
+    <p class="kicker">COMPASS · K-NEAREST-NEIGHBOUR COMPS</p>
+    <h1>Every pre-token protocol, priced by its closest trading twins.</h1>
+    <p class="lede">Compass finds the eight tokenized protocols in the snapshot whose shape — TVL, chain breadth, age — most resembles each protocol that records no token, and prices it at the twins' median market-cap / TVL multiple. No hardcoded names: the same distance metric prices every row.</p>
+    <div class="stats" id="stats"></div>
+  </div>
+</header>
+
+<section class="method" id="method">
+  <h2>How the compass points</h2>
+  <div class="method-grid">
+    <div>
+      <h3>The distance</h3>
+      <p>Features per protocol: log10(TVL), log10(chain count), log10(age days + 30), each standardised over the 144 tokenized peers. Distance is weighted Euclidean (weights 1.0 / 0.5 / 0.5) plus a category term: 0 for an exact category match, 0.6 when either side records no category, 1.25 for a different category. Ties break by slug.</p>
+    </div>
+    <div>
+      <h3>The price</h3>
+      <p>Implied multiple = median of the 8 nearest twins' mcap/TVL. Implied value = TVL × multiple × momentum (7-day TVL change, weight 0.35, clamped) × survival (age with no token, 0.85–1.15) × breadth (extra chains, up to +20%). Every factor is shown on the row's detail, line by line.</p>
+    </div>
+    <div>
+      <h3>The fallback — stated, not hidden</h3>
+      <p>If fewer than 4 twins sit within distance 2.5, the row is priced by its category's median peer multiple, shrunk toward the global median, and its detail says so. A protocol here "records no token" in this snapshot — that is what the data says, never proof it has none.</p>
+    </div>
+  </div>
+</section>
+
+<main class="panel">
+  <div class="tabs" role="tablist">
+    <button id="tab-board" class="tab active" type="button">Radar board</button>
+    <button id="tab-live" class="tab" type="button">Already trading</button>
+  </div>
+  <div class="controls" id="board-controls">
+    <input id="q" type="search" placeholder="Search name, slug or category…" aria-label="Search">
+    <select id="cat" aria-label="Category filter"><option value="">All categories</option></select>
+    <label class="toggle"><input id="watch" type="checkbox"> Watchlist only</label>
+    <span class="count" id="count"></span>
+  </div>
+  <div id="board-view">
+    <table>
+      <thead><tr>
+        <th>#</th><th>Protocol</th><th>Category</th><th>TVL</th><th>7d</th>
+        <th>Twins</th><th>Twin distance</th><th>Multiple</th><th>Implied value</th>
+      </tr></thead>
+      <tbody id="rows"></tbody>
+    </table>
+    <div id="detail"></div>
+  </div>
+  <div id="live-view" hidden>
+    <p class="note">These protocols already record a token in the snapshot. Compass sets them aside — they are the twin pool, never ranked — and shows the market's own value for reference.</p>
+    <table>
+      <thead><tr><th>Protocol</th><th>Category</th><th>TVL</th><th>7d</th><th>Market cap</th></tr></thead>
+      <tbody id="live-rows"></tbody>
+    </table>
+  </div>
+</main>
+
+<footer>
+  <p>Compass · model compass-knn-1 · Snapshot data as of <span id="asof"></span>. Implied values are this entry's own claims from the snapshot's figures, not predictions of a launch. Farm steps are a checklist, not financial advice.</p>
+</footer>
+<script src="../data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
