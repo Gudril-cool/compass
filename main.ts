@@ -49,8 +49,14 @@ if (issue !== null) {
   process.exit(1);
 }
 
-// Clear the output directory before writing, per the entry's determinism rule.
-if (existsSync(out)) rmSync(out, { recursive: true, force: true });
+// Clear the output directory's contents before writing, per the entry's
+// determinism rule. The directory itself is never removed: in the grader's
+// container /output is a mounted volume, and removing a mount point throws
+// (that is what failed this entry's first server run — clearing only the
+// contents achieves the same clean slate everywhere).
+if (existsSync(out)) {
+  for (const name of readdirSync(out)) rmSync(join(out, name), { recursive: true, force: true });
+}
 mkdirSync(out, { recursive: true });
 writeFileSync(join(out, 'board.json'), `${JSON.stringify({ rows: board })}\n`);
 writeFileSync(join(out, 'data.js'), dataScript(radar));
